@@ -1,0 +1,11 @@
+meta {
+  name: Delete caches
+  type: http
+  seq: 6
+}
+
+delete {
+  url: http://localhost:8080/api/products/cache
+  body: none
+  auth: inherit
+}
