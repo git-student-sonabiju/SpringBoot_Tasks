@@ -1,6 +1,7 @@
 package com.example.redisCaching.service;
 
 import com.example.redisCaching.model.Product;
+import com.example.redisCaching.producer.MyKafkaProducer;
 import com.example.redisCaching.repository.ProductRepository;
 import jakarta.annotation.PreDestroy;
 import org.springframework.cache.annotation.CacheEvict;
@@ -14,10 +15,12 @@ import java.time.Duration;
 @Service
 public class ProductService {
 	private final ProductRepository productRepository;
+	private final MyKafkaProducer myKafkaProducer;
 	private final RedisTemplate<String, Object> redisTemplate;
 
-	public ProductService(ProductRepository productRepository, RedisTemplate<String, Object> redisTemplate) {
+	public ProductService(ProductRepository productRepository, MyKafkaProducer myKafkaProducer, RedisTemplate<String, Object> redisTemplate) {
 		this.productRepository = productRepository;
+		this.myKafkaProducer = myKafkaProducer;
 		this.redisTemplate = redisTemplate;
 	}
 
@@ -83,7 +86,12 @@ public class ProductService {
 		existingProduct.setName(product.getName());
 		existingProduct.setBasePrice(product.getBasePrice());
 		existingProduct.setDiscount(product.getDiscount());
-		return productRepository.save(existingProduct);
+		Product updatedProduct = productRepository.save(existingProduct);
+
+		// Send Kafka update
+		myKafkaProducer.sendProductUpdate(updatedProduct);
+
+		return updatedProduct;
 	}
 
 	@PreDestroy

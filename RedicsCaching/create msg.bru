@@ -1,0 +1,20 @@
+meta {
+  name: create msg
+  type: http
+  seq: 7
+}
+
+post {
+  url: http://localhost:8080/api/kafka/send
+  body: text
+  auth: inherit
+}
+
+body:json {
+  
+  
+}
+
+body:text {
+  Hello kafka! fail
+}
