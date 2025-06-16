@@ -4,6 +4,8 @@ import com.example.redisCaching.model.Product;
 import com.example.redisCaching.service.ProductService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -13,6 +15,10 @@ public class ProductController {
 		this.productService = productService;
 	}
 
+	@GetMapping
+	public List<Product> listAllProducts() {
+		return productService.getAllProducts();
+	}
 	@PostMapping
 	public Product createProduct(@RequestBody Product product) {
 		return productService.createProduct(product);

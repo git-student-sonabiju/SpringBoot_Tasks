@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-caching-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-caching
+  template:
+    metadata:
+      labels:
+        app: redis-caching
+    spec:
+      containers:
+        - name: redis-caching-container
+          image: sonabiju/redis-caching-app:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres-service:5432/demo
+            - name: SPRING_DATASOURCE_USERNAME
+              value: admin
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: admin
+            - name: SPRING_DATA_REDIS_HOST
+              value: redis-service
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: kafka-service:9092
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-caching-app-service
+spec:
+  selector:
+    app: redis-caching
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30080
+  type: NodePort

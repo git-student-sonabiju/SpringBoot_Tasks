@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.List;
 
 @Service
 public class ProductService {
@@ -22,6 +23,10 @@ public class ProductService {
 		this.productRepository = productRepository;
 		this.myKafkaProducer = myKafkaProducer;
 		this.redisTemplate = redisTemplate;
+	}
+
+	public List<Product> getAllProducts() {
+		return productRepository.findAll();
 	}
 
 	public Product createProduct(Product product) {
