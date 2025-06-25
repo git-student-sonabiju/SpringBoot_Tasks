@@ -1,4 +1,4 @@
-package com.example.redisCaching.repository;
+package com.example.redisCaching.repository.jpa;
 
 import com.example.redisCaching.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;

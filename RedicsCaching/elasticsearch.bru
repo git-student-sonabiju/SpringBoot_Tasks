@@ -1,0 +1,19 @@
+meta {
+  name: elasticsearch
+  type: http
+  seq: 9
+}
+
+get {
+  url: http://localhost:8080/api/products/search?keyword=phone&page=0&size=3&sortField=name.keyword&direction=desc
+  body: none
+  auth: inherit
+}
+
+params:query {
+  keyword: phone
+  page: 0
+  size: 3
+  sortField: name.keyword
+  direction: desc
+}

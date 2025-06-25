@@ -15,22 +15,23 @@ spec:
       containers:
         - name: postgres
           image: postgres:latest
+          ports:
+            - containerPort: 5432
           env:
-            - name: POSTGRES_DB
-              value: demo
             - name: POSTGRES_USER
               value: admin
             - name: POSTGRES_PASSWORD
               value: admin
-          ports:
-            - containerPort: 5432
+            - name: POSTGRES_DB
+              value: redisCaching
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-service
+  name: postgres
 spec:
   selector:
     app: postgres
   ports:
     - port: 5432
+      targetPort: 5432

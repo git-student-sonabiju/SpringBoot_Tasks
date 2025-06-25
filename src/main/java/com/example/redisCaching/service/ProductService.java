@@ -2,11 +2,15 @@ package com.example.redisCaching.service;
 
 import com.example.redisCaching.model.Product;
 import com.example.redisCaching.producer.MyKafkaProducer;
-import com.example.redisCaching.repository.ProductRepository;
+import com.example.redisCaching.repository.jpa.ProductRepository;
+import com.example.redisCaching.repository.elastic.ProductSearchRepository;
 import jakarta.annotation.PreDestroy;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +22,13 @@ public class ProductService {
 	private final ProductRepository productRepository;
 	private final MyKafkaProducer myKafkaProducer;
 	private final RedisTemplate<String, Object> redisTemplate;
+	private final ProductSearchRepository productSearchRepository;
 
-	public ProductService(ProductRepository productRepository, MyKafkaProducer myKafkaProducer, RedisTemplate<String, Object> redisTemplate) {
+	public ProductService(ProductRepository productRepository, MyKafkaProducer myKafkaProducer, RedisTemplate<String, Object> redisTemplate, ProductSearchRepository productSearchRepository) {
 		this.productRepository = productRepository;
 		this.myKafkaProducer = myKafkaProducer;
 		this.redisTemplate = redisTemplate;
+		this.productSearchRepository = productSearchRepository;
 	}
 
 	public List<Product> getAllProducts() {
@@ -30,8 +36,20 @@ public class ProductService {
 	}
 
 	public Product createProduct(Product product) {
-		return productRepository.save(product);
+		Product saved = productRepository.save(product);
+
+		// Indexing into Elasticsearch
+		Product doc = Product.builder()
+				.id(saved.getId())
+				.name(saved.getName())
+				.basePrice(saved.getBasePrice())
+				.discount(saved.getDiscount())
+				.build();
+
+		productSearchRepository.save(doc);
+		return saved;
 	}
+
 
 	// Annotation-based implementation
 //	@Cacheable(value = "products", key = "#id")
@@ -104,4 +122,12 @@ public class ProductService {
 	public void clearCache() {
 		System.out.println("Clearing all caches");
 	}
+
+	public Page<Product> search(String keyword, int page, int size, String sortField, String direction) {
+		Sort sort = direction.equalsIgnoreCase("desc") ?
+				Sort.by(sortField).descending() : Sort.by(sortField).ascending();
+		Pageable pageable = PageRequest.of(page, size, sort);
+		return productSearchRepository.findByNamePhraseMatch(keyword, pageable);
+	}
+
 }

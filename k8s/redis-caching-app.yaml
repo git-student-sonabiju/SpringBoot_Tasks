@@ -19,20 +19,26 @@ spec:
             - containerPort: 8080
           env:
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://postgres-service:5432/demo
+              value: jdbc:postgresql://postgres:5432/redisCaching
             - name: SPRING_DATASOURCE_USERNAME
               value: admin
             - name: SPRING_DATASOURCE_PASSWORD
               value: admin
-            - name: SPRING_DATA_REDIS_HOST
-              value: redis-service
+            - name: SPRING_REDIS_HOST
+              value: redis
+            - name: SPRING_REDIS_PORT
+              value: "6379"
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
-              value: kafka-service:9092
+              value: kafka:9092
+            - name: SPRING_ELASTICSEARCH_URIS
+              value: http://elasticsearch:9200
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-caching-app-service
+  name: redis-caching-app
 spec:
   selector:
     app: redis-caching
