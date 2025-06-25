@@ -6,4 +6,4 @@ It integrates with **Kafka** for asynchronous messaging and **PostgreSQL** for p
 
 ## Project structure
 
-*   **[com.example.demo](src/main/java/com/example/redisCaching)**: The main application package.
+*   **[com.example.redisCaching](src/main/java/com/example/redisCaching)**: The main application package.
