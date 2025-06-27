@@ -21,13 +21,19 @@ import static org.mockito.Mockito.*;
 
 class ProductServiceTest {
 
-	@Mock private ProductRepository productRepository;
-	@Mock private ProductSearchRepository productSearchRepository;
-	@Mock private RedisTemplate<String, Object> redisTemplate;
-	@Mock private ValueOperations<String, Object> valueOperations;
-	@Mock private MyKafkaProducer myKafkaProducer;
+	@Mock
+	private ProductRepository productRepository;
+	@Mock
+	private ProductSearchRepository productSearchRepository;
+	@Mock
+	private RedisTemplate<String, Object> redisTemplate;
+	@Mock
+	private ValueOperations<String, Object> valueOperations;
+	@Mock
+	private MyKafkaProducer myKafkaProducer;
 
-	@InjectMocks private ProductService productService;
+	@InjectMocks
+	private ProductService productService;
 
 	private Product product;
 
